@@ -20,11 +20,6 @@ app.get('/addcoins/:user/:coins', (req, res) => {
   console.log(req.params.coins);
   firestore.collection('users').doc(req.params.user)
     .update({coins: admin.firestore.FieldValue.increment(parseInt(req.params.coins))})
-    .then(doc => {
-      return res.send(doc.data());
-    }).catch(err => {
-      return res.status(500).send(err);
-    })
 });
 
 app.get('/hi', (req, res) => {
