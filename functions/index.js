@@ -6,20 +6,26 @@ const express = require('express');
 
 const serviceAccount = require("./downhill-dash-firebase-adminsdk.json");
 
-admin.initializeApp({
+firebaseApp = admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://downhill-dash.firebaseio.com"
 });
 
-const firestore = admin.firestore();
+const firestore = firebaseApp.firestore();
 const app = express();
 
 app.get('/addcoins/:user/:coins', (req, res) => {
-  console.log(req.params);
-  console.log(req.params.user);
-  console.log(req.params.coins);
   firestore.collection('users').doc(req.params.user)
     .update({coins: admin.firestore.FieldValue.increment(parseInt(req.params.coins))})
+    return res.send("Added ${req.params.coins} to ${req.params.user}")
+});
+
+app.get('/addAchievement/:user/:achievementName', (req, res) => {
+  var ach = "achievements." + req.params.achievementName
+  firestore.collection('users').doc(req.params.user)
+    .update({[ach]: true})
+    return res.send(`Added ${req.params.achievementName} 
+    achievement to ${req.params.user}`)
 });
 
 app.get('/hi', (req, res) => {
