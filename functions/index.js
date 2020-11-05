@@ -51,7 +51,12 @@ app.get('/checkDaily/:user', (req, res) => {
     }
     
   }).catch((err) => console.log("Error daily", err))
+});
 
+app.get('/changeTier/:user/:newTier', (req, res) => {
+  firestore.collection('users').doc(req.params.user)
+    .update({tier: parseInt(req.params.newTier)})
+    return res.send(`Moved ${req.params.user} to tier ${req.params.newTier}`)
 });
 
 exports.app = functions.https.onRequest(app);
