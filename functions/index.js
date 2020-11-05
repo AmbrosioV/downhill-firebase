@@ -14,22 +14,43 @@ firebaseApp = admin.initializeApp({
 const firestore = firebaseApp.firestore();
 const app = express();
 
-app.get('/addcoins/:user/:coins', (req, res) => {
+app.get('/hi', (req, res) => {
+  return res.send("HIHO");
+});
+
+app.get('/addCoins/:user/:coins', (req, res) => {
   firestore.collection('users').doc(req.params.user)
     .update({coins: admin.firestore.FieldValue.increment(parseInt(req.params.coins))})
-    return res.send("Added ${req.params.coins} to ${req.params.user}")
+    return res.send(`Added ${req.params.coins} to ${req.params.user}`)
 });
 
 app.get('/addAchievement/:user/:achievementName', (req, res) => {
-  var ach = "achievements." + req.params.achievementName
+  var achievementName = "achievements." + req.params.achievementName
   firestore.collection('users').doc(req.params.user)
-    .update({[ach]: true})
+    .update({[achievementName]: true})
     return res.send(`Added ${req.params.achievementName} 
     achievement to ${req.params.user}`)
 });
 
-app.get('/hi', (req, res) => {
-  return res.send("HIHO");
+app.get('/checkDaily/:user', (req, res) => {
+  firestore.collection('users').doc(req.params.user).get()
+  .then(function (user) {
+    const now = admin.firestore.Timestamp.now().toDate()
+    const daily = user.data().daily.toDate()
+
+    if (daily < now) {
+      const next_daily = new Date(now.setDate(now.getDate()+1))
+      firestore.collection('users').doc(req.params.user)
+      .update({
+        daily: admin.firestore.Timestamp.fromDate(next_daily),
+        coins: admin.firestore.FieldValue.increment(90/parseInt(user.data().tier))
+      })
+      return res.send(`Has recibido ${90/parseInt(user.data().tier)} monedas`)
+    } else {
+      return res.send("Ya has recibido daily.")
+    }
+    
+  })
 });
 
 exports.app = functions.https.onRequest(app);
