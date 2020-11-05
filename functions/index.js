@@ -34,7 +34,7 @@ app.get('/addAchievement/:user/:achievementName', (req, res) => {
 
 app.get('/checkDaily/:user', (req, res) => {
   firestore.collection('users').doc(req.params.user).get()
-  .then(function (user) {
+  .then((user) => {
     const now = admin.firestore.Timestamp.now().toDate()
     const daily = user.data().daily.toDate()
 
@@ -50,7 +50,8 @@ app.get('/checkDaily/:user', (req, res) => {
       return res.send("Ya has recibido daily.")
     }
     
-  })
+  }).catch((err) => console.log("Error daily", err))
+
 });
 
 exports.app = functions.https.onRequest(app);
