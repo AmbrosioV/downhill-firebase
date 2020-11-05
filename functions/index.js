@@ -6,29 +6,51 @@ const express = require('express');
 
 const serviceAccount = require("./downhill-dash-firebase-adminsdk.json");
 
-admin.initializeApp({
+firebaseApp = admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://downhill-dash.firebaseio.com"
 });
 
-const firestore = admin.firestore();
+const firestore = firebaseApp.firestore();
 const app = express();
-
-app.get('/addcoins/:user/:coins', (req, res) => {
-  console.log(req.params);
-  console.log(req.params.user);
-  console.log(req.params.coins);
-  firestore.collection('users').doc(req.params.user)
-    .update({coins: admin.firestore.FieldValue.increment(parseInt(req.params.coins))})
-    .then(doc => {
-      return res.send(doc.data());
-    }).catch(err => {
-      return res.status(500).send(err);
-    })
-});
 
 app.get('/hi', (req, res) => {
   return res.send("HIHO");
+});
+
+app.get('/addCoins/:user/:coins', (req, res) => {
+  firestore.collection('users').doc(req.params.user)
+    .update({coins: admin.firestore.FieldValue.increment(parseInt(req.params.coins))})
+    return res.send(`Added ${req.params.coins} to ${req.params.user}`)
+});
+
+app.get('/addAchievement/:user/:achievementName', (req, res) => {
+  var achievementName = "achievements." + req.params.achievementName
+  firestore.collection('users').doc(req.params.user)
+    .update({[achievementName]: true})
+    return res.send(`Added ${req.params.achievementName} 
+    achievement to ${req.params.user}`)
+});
+
+app.get('/checkDaily/:user', (req, res) => {
+  firestore.collection('users').doc(req.params.user).get()
+  .then(function (user) {
+    const now = admin.firestore.Timestamp.now().toDate()
+    const daily = user.data().daily.toDate()
+
+    if (daily < now) {
+      const next_daily = new Date(now.setDate(now.getDate()+1))
+      firestore.collection('users').doc(req.params.user)
+      .update({
+        daily: admin.firestore.Timestamp.fromDate(next_daily),
+        coins: admin.firestore.FieldValue.increment(90/parseInt(user.data().tier))
+      })
+      return res.send(`Has recibido ${90/parseInt(user.data().tier)} monedas`)
+    } else {
+      return res.send("Ya has recibido daily.")
+    }
+    
+  })
 });
 
 exports.app = functions.https.onRequest(app);
