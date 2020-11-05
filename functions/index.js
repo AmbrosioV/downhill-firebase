@@ -66,7 +66,7 @@ app.get('/changeTrackTime/:userName/:trackOwner/:trackName/:time', (req, res) =>
 			const trackPath = "times." + trackOwner + "." + trackName
 			firestore.collection('users').doc(userName)
 				.update({[trackPath]: parseInt(time)})
-			return res.send(`${userName} hizo un nuevo recprd de ${time}s 
+			return res.send(`${userName} hizo un nuevo record de ${time}s 
 				en ${trackName} de ${trackOwner}.`)
 		} else {
 		return res.send("No es un record.")
