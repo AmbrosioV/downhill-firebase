@@ -23,9 +23,9 @@ const userInitParams = {
     rich: false,
     secret: false,
   },
-  coins: 0,
+  coins: 20,
   daily: admin.firestore.FieldValue.serverTimestamp(),
-  tier: 1,
+  tier: 3,
   times: {},
 };
 
