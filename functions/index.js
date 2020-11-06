@@ -3,6 +3,7 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const express = require("express");
+const cors = require("cors");
 
 const serviceAccount = require("./downhill-dash-firebase-adminsdk.json");
 
@@ -28,6 +29,8 @@ const userInitParams = {
   tier: 3,
   times: {},
 };
+
+app.use(cors({ origin: true }));
 
 app.get("/hi", (req, res) => {
   return res.send("HIHO");
