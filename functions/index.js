@@ -95,26 +95,14 @@ app.get(
   "/changeTrackTime/:userName/:trackOwner/:trackName/:time",
   (req, res) => {
     const { userName, trackOwner, trackName, time } = req.params;
+    const trackPath = "times." + trackOwner + "." + trackName;
     firestore
       .collection("users")
       .doc(userName)
-      .get()
-      .then((user) => {
-        if (parseFloat(time) < user.data().times[trackOwner][trackName]) {
-          const trackPath = "times." + trackOwner + "." + trackName;
-          firestore
-            .collection("users")
-            .doc(userName)
-            .update({ [trackPath]: parseInt(time) });
-          return res.send(`${userName} hizo un nuevo record de ${time}s 
-				en ${trackName} de ${trackOwner}.`);
-        } else {
-          return res.send("No es un record.");
-        }
-      })
-      .catch((err) => console.log("Error track time", err));
-  }
-);
+      .update({ [trackPath]: parseInt(time) });
+    return res.send(`${userName} hizo un nuevo record de ${time}s 
+      en ${trackName} de ${trackOwner}.`);
+});
 
 app.post("/login/:user", async (req, res) => {
   const userRef = firestore.collection("users").doc(req.params.user);
