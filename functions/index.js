@@ -1,4 +1,4 @@
-"use-strict";
+  "use-strict";
 
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
@@ -23,6 +23,8 @@ const userInitParams = {
     firstPlace: false,
     rich: false,
     secret: false,
+    login: false, 
+    addFriend: false,
   },
   coins: 20,
   daily: admin.firestore.FieldValue.serverTimestamp(),
