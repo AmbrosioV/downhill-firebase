@@ -17,7 +17,7 @@ const app = express();
 
 const userInitParams = {
   achievements: {
-    comeback: false,
+    tierOne: false,
     creator: false,
     firstCoin: false,
     firstPlace: false,
